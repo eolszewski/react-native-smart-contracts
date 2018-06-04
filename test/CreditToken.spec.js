@@ -124,15 +124,15 @@ contract('CreditToken', function ([owner, recipient, anotherAccount]) {
             assert.equal(recipientBalance, amount);
           });
 
-          // it('emits a transfer event', async function () {
-          //   const { logs } = await this.token.transfer(to, amount, { from: anotherAccount });
+          it('emits a transfer event', async function () {
+            const { logs } = await this.token.transfer(to, amount, { from: anotherAccount });
 
-          //   assert.equal(logs.length, 1);
-          //   assert.equal(logs[0].event, 'Transfer');
-          //   assert.equal(logs[0].args.to, to);
-          //   assert.equal(logs[0].args.amount, anotherAccount);
-          //   assert(logs[0].args.value.eq(amount));
-          // });
+            assert.equal(logs.length, 1);
+            assert.equal(logs[0].event, 'Transfer');
+            assert.equal(logs[0].args.to, to);
+            assert.equal(logs[0].args.amount, anotherAccount);
+            assert(logs[0].args.value.eq(amount));
+          });
         });
       });
     });
