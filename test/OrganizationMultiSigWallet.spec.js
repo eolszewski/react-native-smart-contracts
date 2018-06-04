@@ -74,7 +74,16 @@ contract('OrganizationMultiSigWallet', (accounts) => {
     balance = await this.token.balanceOf(organization.address);
     assert.equal(balance.toString(10), web3.toWei(2000, "ether"));
 
-	});
+  });
+	
+  it("should submit and execute CreditToken transaction", async () => {
+    this.token = await CreditToken.at(CreditToken.address);
+
+    const initialBalance = await this.token.balanceOf(organization.address);
+    await organization.submitTransaction(accounts[1], web3.toWei(2, "ether"), 2, { from: accounts[0] });
+    assert.equal((await this.token.balanceOf(organization.address)).toString(10), web3.toBigNumber(initialBalance).minus(web3.toWei(2, "ether")).toString(10), "transaction execution issue");
+  });
+
 
   // it("should send funds to org contract", async () => {
   //   const initialBalance = await web3.eth.getBalance(organization.address);
