@@ -63,10 +63,18 @@ contract('OrganizationMultiSigWallet', (accounts) => {
 
     await this.token.mint(organization.address, web3.toWei(1000, "ether"), { from: accounts[0] });
 
-    const balance = await this.token.balanceOf(organization.address);
+    let balance = await this.token.balanceOf(organization.address);
     console.log('balance: ', balance);
-    assert.equal(balance, web3.toWei(1000, "ether"));
-  });
+    assert.equal(balance.toString(10), web3.toWei(1000, "ether"));
+
+	//mint tokens and send to the organization
+    await this.token.mint(accounts[0], web3.toWei(1000, "ether"), { from: accounts[0] });	
+	await this.token.transfer(organization.address, web3.toWei(1000, "ether"), { from: accounts[0] });
+
+    balance = await this.token.balanceOf(organization.address);
+    assert.equal(balance.toString(10), web3.toWei(2000, "ether"));
+
+	});
 
   // it("should send funds to org contract", async () => {
   //   const initialBalance = await web3.eth.getBalance(organization.address);
