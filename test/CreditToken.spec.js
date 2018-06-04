@@ -20,12 +20,6 @@ contract('CreditToken', function ([owner, recipient, anotherAccount]) {
   });
   
   describe('as a basic mintable token', function () {
-    describe('after token creation', function () {
-      it('sender should be token owner', async function () {
-        const tokenOwner = await this.token.owner({ from: owner });
-        tokenOwner.should.equal(owner);
-      });
-    });
 
     describe('minting finished', function () {
       describe('when the token minting is not finished', function () {
@@ -107,14 +101,12 @@ contract('CreditToken', function ([owner, recipient, anotherAccount]) {
         describe('when the sender has enough balance', function () {
           const amount = 100;
 
-          it('mints the requested amount', async function () {
+          it('transfers successfully', async function () {
             await this.token.mint(to, amount, { from });
 
             const balance = await this.token.balanceOf(to);
             assert.equal(balance, amount);
-          });
 
-          it('transfers the requested amount', async function () {
             await this.token.transfer(anotherAccount, amount, { from: to });
 
             const senderBalance = await this.token.balanceOf(to);
@@ -122,15 +114,13 @@ contract('CreditToken', function ([owner, recipient, anotherAccount]) {
 
             const recipientBalance = await this.token.balanceOf(anotherAccount);
             assert.equal(recipientBalance, amount);
-          });
 
-          it('emits a transfer event', async function () {
             const { logs } = await this.token.transfer(to, amount, { from: anotherAccount });
 
             assert.equal(logs.length, 1);
             assert.equal(logs[0].event, 'Transfer');
+            assert.equal(logs[0].args.from, anotherAccount);
             assert.equal(logs[0].args.to, to);
-            assert.equal(logs[0].args.amount, anotherAccount);
             assert(logs[0].args.value.eq(amount));
           });
         });
