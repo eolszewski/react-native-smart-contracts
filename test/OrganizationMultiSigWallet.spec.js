@@ -69,7 +69,7 @@ contract('OrganizationMultiSigWallet', (accounts) => {
 
 	//mint tokens and send to the organization
     await this.token.mint(accounts[0], web3.toWei(1000, "ether"), { from: accounts[0] });	
-	await this.token.transfer(organization.address, web3.toWei(1000, "ether"), { from: accounts[0] });
+	  await this.token.transfer(organization.address, web3.toWei(1000, "ether"), { from: accounts[0] });
 
     balance = await this.token.balanceOf(organization.address);
     assert.equal(balance.toString(10), web3.toWei(2000, "ether"));
@@ -80,7 +80,7 @@ contract('OrganizationMultiSigWallet', (accounts) => {
     this.token = await CreditToken.at(CreditToken.address);
 
     const initialBalance = await this.token.balanceOf(organization.address);
-    await organization.submitTransaction(accounts[1], web3.toWei(2, "ether"), 2, { from: accounts[0] });
+    await organization.submitTransaction(accounts[1], web3.toWei(2, "ether"), 2, { from: accounts[4] });
     assert.equal((await this.token.balanceOf(organization.address)).toString(10), web3.toBigNumber(initialBalance).minus(web3.toWei(2, "ether")).toString(10), "transaction execution issue");
   });
 
