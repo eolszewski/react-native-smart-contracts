@@ -1,10 +1,16 @@
 import React from 'react';
 import SimpleStorageContract from '../../build/contracts/SimpleStorage.json';
+import IDTokenContract from '../../build/contracts/IDToken.json';
+import CreditTokenContract from '../../build/contracts/CreditToken.json';
+import OrganizationMultiSigWalletContract from '../../build/contracts/OrganizationMultiSigWallet.json';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View, TextInput, ScrollView } from 'react-native';
 import { Card, ListItem, Button } from 'react-native-elements'
 
 const contract = require('truffle-contract');
 const simpleStorage = contract(SimpleStorageContract);
+const IDToken = contract(IDTokenContract);
+const CreditToken = contract(CreditTokenContract);
+const OrgWallet = contract(OrganizationMultiSigWalletContract);
 
 export default class Home extends React.Component {
   static navigationOptions = {
@@ -17,25 +23,31 @@ export default class Home extends React.Component {
       storageValue: 0,
       pendingStorageValue: 0,
       accounts: [],
-      simpleStorageInstance: null
+      simpleStorageInstance: null,
+      address: null
     };
 
     this.updateStorageValue = this.updateStorageValue.bind(this);
   }
 
   componentWillReceiveProps(props) {
+    console.log('props: ', props);
     if (props && props.screenProps && props.screenProps.web3) {
       this.setState({
         storageValue: 0,
         pendingStorageValue: 0,
-        simpleStorageInstance: null
+        simpleStorageInstance: null,
+        IDTokenInstance: null,
+        CreditTokenInstance: null,
+        OrgWalletInstance: null
       });
 
-      this.instantiateContract(props.screenProps.web3);
+      this.instantiateContracts(props.screenProps.web3);
     }
   }
 
-  async instantiateContract(web3) {
+  async instantiateContracts(web3) {
+    console.log('web3: ', web3);
     /*
      * SMART CONTRACT EXAMPLE
      *
@@ -43,15 +55,39 @@ export default class Home extends React.Component {
      * state management library, but for convenience I've placed them here.
      */
     simpleStorage.setProvider(web3.currentProvider);
+    IDToken.setProvider(web3.currentProvider);
+    CreditToken.setProvider(web3.currentProvider);
+    OrgWallet.setProvider(web3.currentProvider);
 
     // Declaring this for later so we can chain functions on SimpleStorage.
-    let simpleStorageInstance;
+    let simpleStorageInstance, OrgWalletInstance, IDTokenInstance, CreditTokenInstance;
 
     try {
-      simpleStorageInstance = await simpleStorage.at('0x01dc2837360d57fe3b596d98e0ef56dbb945690c');
+      simpleStorageInstance = await simpleStorage.at('0x79e61576cd28c0dd4d634539f380d84a8ae2bce3');
       let storageValue = await simpleStorageInstance.get.call();
       this.setState({ simpleStorageInstance, storageValue: storageValue.toString(10) });
-    } catch(error) {
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      OrgWalletInstance = await OrgWallet.at('0x26514c9baf3d1f782ab9d8204b5068a70a1a9b42');
+      this.setState({ OrgWalletInstance });
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      IDTokenInstance = await IDToken.at('0x789138a2eac5e8a8042390e239f7bb449cb4a760');
+      this.setState({ IDTokenInstance });
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      CreditTokenInstance = await CreditToken.at('0x9327066cb015e733e8ba3d89e778855ef0a519b5');
+      this.setState({ CreditTokenInstance });
+    } catch (error) {
       console.log(error);
     }
   }
@@ -82,30 +118,40 @@ export default class Home extends React.Component {
         </Card>
         <Card>
           <TextInput
-          style={{height: 40}}
-          placeholder="Enter the new storage value!"
-          onChangeText={(value) => this.setState({pendingStorageValue: value})}
-        />
-        {
-          this.state.loading ?
-            (<ActivityIndicator
-             animating = {this.state.loading}
-             style = {styles.activityIndicator}/>) :
-            (<Button
-            onPress={this.updateStorageValue}
-            title="Update Storage Value"
-            accessibilityLabel="Update the storage value!"
-            />)
-        }
+            style={{ height: 40 }}
+            placeholder="Enter the new storage value!"
+            onChangeText={(value) => this.setState({ pendingStorageValue: value })}
+          />
+          {
+            this.state.loading ?
+              (<ActivityIndicator
+                animating={this.state.loading}
+                style={styles.activityIndicator} />) :
+              (<Button
+                onPress={this.updateStorageValue}
+                title="Update Storage Value"
+                accessibilityLabel="Update the storage value!"
+              />)
+          }
         </Card>
-        <Card>
-          <Text>Current network: {this.props.screenProps.network.name}</Text>
-          <Text>URL: {this.props.screenProps.network.url}</Text>
-          <Button
-            onPress={() => this.props.navigation.navigate('Network')}
-            title="Choose Network"
-            /> 
-        </Card>
+        {/* <Card>
+          <TextInput
+            style={{ height: 40 }}
+            placeholder="Enter the new storage value!"
+            onChangeText={(address) => this.setState({ address })}
+          />
+          {
+            this.state.loading ?
+              (<ActivityIndicator
+                animating={this.state.loading}
+                style={styles.activityIndicator} />) :
+              (<Button
+                onPress={this.addAdmin}
+                title="Add agent to organization"
+                accessibilityLabel="Update the storage value!"
+              />)
+          }
+        </Card> */}
       </ScrollView>
     );
   }

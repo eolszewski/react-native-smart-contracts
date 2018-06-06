@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { Platform } from 'react-native';
 import Promise from 'bluebird';
 import HDWalletProvider from 'truffle-hdwallet-provider';
-import { ROPSTEN_RPC_URL } from './config';
+import { ROPSTEN_RPC_URL, NGROK_RPC_URL } from './config';
 
 const getWeb3 = (mnemonic, rpcUrl) => {
   if (!mnemonic) {
@@ -10,7 +10,7 @@ const getWeb3 = (mnemonic, rpcUrl) => {
   }
 
   if(!rpcUrl) {
-    rpcUrl = ROPSTEN_RPC_URL;
+    rpcUrl = NGROK_RPC_URL;
   }
   
   // iOS and Android have different host computer hostnames.

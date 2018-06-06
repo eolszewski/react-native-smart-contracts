@@ -2,6 +2,7 @@ export const MAINET_RPC_URL = 'https://mainnet.infura.io/'
 export const ROPSTEN_RPC_URL = 'https://ropsten.infura.io/'
 export const KOVAN_RPC_URL = 'https://kovan.infura.io/'
 export const RINKEBY_RPC_URL = 'https://rinkeby.infura.io/'
+export const NGROK_RPC_URL = 'https://2b5a925d.ngrok.io'
 
 export const networks = [
     {
@@ -18,10 +19,15 @@ export const networks = [
       id: 42,
       name: "Kovan",
       url: KOVAN_RPC_URL
-    },
-    {
-      id: 4,
-      name: "Rinkeby",
-      url: RINKEBY_RPC_URL
-    }
+  },
+  {
+    id: 4,
+    name: "Rinkeby",
+    url: RINKEBY_RPC_URL
+  },
+  {
+    id: 5,
+    name: "Localhost",
+    url: NGROK_RPC_URL
+  }
 ];

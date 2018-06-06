@@ -25,6 +25,7 @@ contract('OrganizationMultiSigWallet', (accounts) => {
 
   it("should add agents", async () => {
     await organization.addAgent(accounts[3]);
+    await organization.addAgent(accounts[5]);
     await organization.addAgent(accounts[4], { from: accounts[2] });
     console.log(await organization.getAgents());
   });
@@ -32,7 +33,7 @@ contract('OrganizationMultiSigWallet', (accounts) => {
   it("should remove agent " + accounts[4], async () => {
     await organization.removeAgent(accounts[4], { from: accounts[2] });
     const agentsCount = await organization.getAgents();
-    assert.equal(agentsCount.length, 1, "removal error");
+    assert.equal(agentsCount.length, 2, "removal error");
   });
 
   it("should remove admin " + accounts[2], async () => {
@@ -80,10 +81,14 @@ contract('OrganizationMultiSigWallet', (accounts) => {
     this.token = await CreditToken.at(CreditToken.address);
 
     const initialBalance = await this.token.balanceOf(organization.address);
-    await organization.submitTransaction(accounts[1], web3.toWei(2, "ether"), 2, { from: accounts[4] });
-    assert.equal((await this.token.balanceOf(organization.address)).toString(10), web3.toBigNumber(initialBalance).minus(web3.toWei(2, "ether")).toString(10), "transaction execution issue");
+    await organization.submitTransaction(accounts[1], web3.toWei(3, "ether"), 2, { from: accounts[5] });
+    assert.equal((await this.token.balanceOf(accounts[1])).toString(10), web3.toWei(3, "ether").toString(10), "transaction execution issue");
   });
 
+  it("should check daily crdt spendings and have 3 balance", async () => {
+    const spentToday = await organization.spentToday(accounts[5]);
+    assert.equal(spentToday[2], web3.toWei(3, "ether"), "spentToday data issue");
+  });
 
   // it("should send funds to org contract", async () => {
   //   const initialBalance = await web3.eth.getBalance(organization.address);
